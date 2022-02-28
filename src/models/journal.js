@@ -16,8 +16,8 @@ const JournalSchema = new Schema({
     username: String,
   },
 });
-JournalSchema.statics.findData = function (schoolname,gradeNum,classroomNum,themeColor) {
-  return this.findOne({ schoolname,gradeNum,classroomNum,themeColor });
+JournalSchema.statics.findData = function (schoolName,gradeNum,classroomNum,themeColor,createDate) {
+  return this.findOne({ schoolName,gradeNum,classroomNum,themeColor,createDate });
 };
 
 const Journal = mongoose.model('Journal', JournalSchema);

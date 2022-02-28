@@ -21,7 +21,7 @@ export const register = async (ctx) => {
 
   try {
     const exists = await Journal.findData(schoolName,gradeNum,classroomNum,themeColor,createDate);
-    if (exists) {
+    if (exists) { 
       ctx.status = 409;
       return;
     } else {
@@ -37,11 +37,29 @@ export const register = async (ctx) => {
       const query = {
         ...(username ? { 'user.username': username } : {})
       };
-      const journals = await Journal.find(query);
+      const journals = await Journal.find(query)
+      .sort({ _id: -1 })
+      .exec();
       ctx.body = journals;
     }
 
 
+  } catch (e) {
+    ctx.throw(500, e);
+  }
+};
+
+export const list = async (ctx) => {
+  const { username } = ctx.state.user;
+
+  try {
+    const query = {
+      ...(username ? { 'user.username': username } : {})
+    };
+    const journals = await Journal.find(query)
+    .sort({ _id: -1 })
+    .exec();
+    ctx.body = journals;
   } catch (e) {
     ctx.throw(500, e);
   }
