@@ -37,9 +37,38 @@ export const register = async (ctx) => {
     }
 };
 
-export const list = async (ctx) => {
-  const { journal_id,selectedMonth } = ctx.params;
+export const update = async (ctx) => {
+  const {id} = ctx.params;
+  try{
+    const memo = await Memo.findByIdAndUpdate(id,ctx.request.body, {
+      new: true,
+    }).exec();
+    if(!memo){
+      ctx.status = 404;
+      return;
+    }
+    ctx.body = memo;
+  } catch(e) {
+    ctx.throw(500, e );
+  }
 
+};
+
+export const remove = async ctx => {
+  const {id} = ctx.params;
+  try{
+    await Memo.findByIdAndRemove(id).exec();
+    ctx.status = 204;
+  } catch(e) {
+    ctx.throw(500,e);
+  }
+}
+
+export const list = async (ctx) => {
+  let { journal_id,selectedMonth } = ctx.query;
+  if(selectedMonth == null){
+    selectedMonth = new Date().getMonth()+1;
+  }
   try {
     const query = {
       ...({ 'journal._id': journal_id,'memoMonth':selectedMonth })
