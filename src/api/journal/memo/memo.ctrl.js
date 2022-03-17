@@ -47,6 +47,7 @@ export const update = async (ctx) => {
       ctx.status = 404;
       return;
     }
+    console.log(memo);
     ctx.body = memo;
   } catch(e) {
     ctx.throw(500, e );
@@ -58,7 +59,7 @@ export const remove = async ctx => {
   const {id} = ctx.params;
   try{
     await Memo.findByIdAndRemove(id).exec();
-    ctx.status = 204;
+    ctx.body= {id};
   } catch(e) {
     ctx.throw(500,e);
   }

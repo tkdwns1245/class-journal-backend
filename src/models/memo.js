@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
 const MemoSchema = new Schema({
-  _id: mongoose.Types.ObjectId,
   title: String,
   content: String,
   memoMonth: Number,
