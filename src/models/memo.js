@@ -12,6 +12,10 @@ const MemoSchema = new Schema({
   },
   journal: {
     _id: mongoose.Types.ObjectId,
+  },
+  user: {
+    _id: mongoose.Types.ObjectId,
+    username: String,
   }
 });
 

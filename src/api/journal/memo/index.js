@@ -1,11 +1,15 @@
 import Router from 'koa-router';
 import * as memoCtrl from './memo.ctrl';
+import checkLoggedIn from '../../../lib/checkLoggedIn';
+
+const memos = new Router();
+memos.get('/',checkLoggedIn, memoCtrl.list);
+memos.post('/',checkLoggedIn, memoCtrl.register);
 
 const memo = new Router();
+memo.patch('/',checkLoggedIn,memoCtrl.checkOwnMemo, memoCtrl.update);
+memo.delete('/',checkLoggedIn,memoCtrl.checkOwnMemo, memoCtrl.remove);
 
-memo.post('/register', memoCtrl.register);
-memo.patch('/:id', memoCtrl.update);
-memo.delete('/:id', memoCtrl.remove);
-memo.get('/list', memoCtrl.list);
+memos.use('/:id',memoCtrl.getMemoById, memo.routes());
 
-export default memo;
+export default memos;

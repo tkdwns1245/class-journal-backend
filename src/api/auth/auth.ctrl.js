@@ -18,6 +18,9 @@ export const register = async (ctx) => {
     const exists = await User.findByUsername(username);
     if (exists) {
       ctx.status = 409;
+      ctx.body = {
+        Message: 'username is exist aleady',
+      }
       return;
     }
 
@@ -51,11 +54,17 @@ export const login = async (ctx) => {
     const user = await User.findByUsername(username);
     if (!user) {
       ctx.status = 401;
+      ctx.body = {
+        Message: 'incorrect username or password',
+      }
       return;
     }
     const valid = await user.checkPassword(password);
     if (!valid) {
       ctx.status = 401;
+      ctx.body = {
+        Message: 'incorrect username or password',
+      }
       return;
     }
     ctx.body = user.serialize();

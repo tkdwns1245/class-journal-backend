@@ -1,5 +1,6 @@
 import Joi from '@hapi/joi';
 import Memo from '../../../models/memo';
+import { ObjectId } from 'bson';
 
 export const register = async (ctx) => {
   const schema = Joi.object().keys({
@@ -22,7 +23,8 @@ export const register = async (ctx) => {
         title,
         content,
         memoMonth:selectedMonth,
-        journal: selectedJournal
+        journal: selectedJournal,
+        user: ctx.state.user,
       });
       await memo.save();
       const query = {
@@ -47,7 +49,6 @@ export const update = async (ctx) => {
       ctx.status = 404;
       return;
     }
-    console.log(memo);
     ctx.body = memo;
   } catch(e) {
     ctx.throw(500, e );
@@ -82,3 +83,37 @@ export const list = async (ctx) => {
     ctx.throw(500, e);
   }
 };
+
+export const getMemoById = async (ctx, next) => {
+  const { id } = ctx.params;
+  if(!ObjectId.isValid(id)) {
+    ctx.status = 400;
+    ctx.body = {
+      Message: 'Not valid ObjectId',
+    }
+    return;
+  }
+  try{
+    const memo = await Memo.findById(id);
+    if(!memo){
+      ctx.status = 404;
+      return;
+    }
+    ctx.state.memo = memo;
+    return next();
+  }catch(e) {
+    ctx.throw(500, e);
+  }
+}
+
+export const checkOwnMemo = (ctx, next) => {
+  const {user,memo} = ctx.state;
+  if(memo.user._id.toString() !== user._id) {
+    ctx.status = 403;
+    ctx.body = {
+      Message: 'do not have authority',
+    }
+    return;
+  }
+  return next();
+}
