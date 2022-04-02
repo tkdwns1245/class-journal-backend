@@ -7,7 +7,7 @@ export const register = async (ctx) => {
     gradeNum: Joi.number().min(1).max(6).required(),
     classroomNum: Joi.number().required().min(1).max(20),
     themeColor: Joi.string().required(),
-    createDate: Joi.date().required()
+    classYear: Joi.date().required()
   });
   const result = schema.validate(ctx.request.body);
   if (result.error) {
@@ -16,11 +16,11 @@ export const register = async (ctx) => {
     return;
   }
 
-  const { schoolName,gradeNum,classroomNum,themeColor,createDate } = ctx.request.body;
+  const { schoolName,gradeNum,classroomNum,themeColor,classYear } = ctx.request.body;
   const { username } = ctx.state.user;
 
   try {
-    const exists = await Journal.findData(schoolName,gradeNum,classroomNum,themeColor,createDate);
+    const exists = await Journal.findData(schoolName,gradeNum,classroomNum,themeColor,classYear);
     if (exists) { 
       ctx.status = 409;
       return;
@@ -30,7 +30,7 @@ export const register = async (ctx) => {
         gradeNum,
         classroomNum,
         themeColor,
-        createDate,
+        classYear,
         user: ctx.state.user,
       });
       await journal.save();
