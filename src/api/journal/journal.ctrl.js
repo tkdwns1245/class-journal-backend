@@ -30,7 +30,7 @@ export const register = async (ctx) => {
         gradeNum,
         classroomNum,
         themeColor,
-        classYear,
+        classYear:classYear,
         user: ctx.state.user,
       });
       await journal.save();

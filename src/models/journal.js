@@ -7,6 +7,7 @@ const JournalSchema = new Schema({
   gradeNum: Number,
   classroomNum: Number,
   themeColor: String,
+  classYear: Date,
   createDate: {
     type: Date,
     default: Date.now,

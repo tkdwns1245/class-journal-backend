@@ -74,16 +74,16 @@ export const remove = async ctx => {
 }
 
 export const list = async (ctx) => {
-  let { journal,selectedMonth } = ctx.query;
+  let { journal_id,journal_classYear,selectedMonth } = ctx.query;
   if(selectedMonth == null){
     selectedMonth = new Date().getMonth()+1;
   }
   try {
     const query = {
-      ...({ 'journal._id': journal._id,
+      ...({ 'journal._id': journal_id,
       'startDate':  {
-        $gte: new Date(journal.classYear,selectedMonth),
-        $lt: new Date(journal.classYear,selectedMonth+1)
+        $gte: new Date(journal_classYear.split('-')[0],selectedMonth),
+        $lt: new Date(journal_classYear.split('-')[0],selectedMonth+1)
       }})
     };
     const appointments = await Appointment.find(query)
