@@ -3,13 +3,13 @@ import Appointment from '../../../models/appointment';
 import { ObjectId } from 'bson';
 
 export const register = async (ctx) => {
-  console.log(ctx.request.body);
   const schema = Joi.object().keys({
     title: Joi.string().min(0).max(30).required(),
     content: Joi.string().min(0).max(100).required(),
     startDate: Joi.date().required(),
     endDate: Joi.date().required(),
-    selectedJournal: Joi.required()
+    selectedJournal: Joi.required(),
+    selectedMonth:Joi.required()
   });
   const result = schema.validate(ctx.request.body);
   if (result.error) {
@@ -18,8 +18,7 @@ export const register = async (ctx) => {
     return;
   }
 
-  const { title,content,startDate,endDate,selectedJournal } = ctx.request.body;
-
+  let { title,content,startDate,endDate,selectedJournal,selectedMonth } = ctx.request.body;
   try {
       const appointment = new Appointment({
         title,
@@ -30,11 +29,12 @@ export const register = async (ctx) => {
         user: ctx.state.user,
       });
       await appointment.save();
+      selectedJournal.classYear = selectedJournal.classYear.split('-')[0];
       const query = {
         ...({ 'journal._id': selectedJournal._id,
         'startDate':  {
-          $gte: new Date(startDate.split('-')[0],startDate.split('-')[1]),
-          $lt: new Date(startDate.split('-')[0],startDate.split('-')[1]+1)
+          $gte: new Date(`${selectedJournal.classYear}-${selectedMonth}-2`),
+          $lt: new Date(`${selectedJournal.classYear}-${parseInt(selectedMonth)+1}-2`)
         }})
       };
       const appointments = await Appointment.find(query)
@@ -75,15 +75,18 @@ export const remove = async ctx => {
 
 export const list = async (ctx) => {
   let { journal_id,journal_classYear,selectedMonth } = ctx.query;
+  
   if(selectedMonth == null){
     selectedMonth = new Date().getMonth()+1;
   }
   try {
+    
+    journal_classYear = journal_classYear.split('-')[0];
     const query = {
       ...({ 'journal._id': journal_id,
       'startDate':  {
-        $gte: new Date(journal_classYear.split('-')[0],selectedMonth),
-        $lt: new Date(journal_classYear.split('-')[0],selectedMonth+1)
+        $gte: new Date(`${journal_classYear}-${selectedMonth}-2`),
+        $lt: new Date(`${journal_classYear}-${parseInt(selectedMonth)+1}-2`)
       }})
     };
     const appointments = await Appointment.find(query)
