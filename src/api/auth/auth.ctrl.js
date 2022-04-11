@@ -9,7 +9,9 @@ export const register = async (ctx) => {
   const result = schema.validate(ctx.request.body);
   if (result.error) {
     ctx.status = 400;
-    ctx.body = result.error;
+    ctx.body = {
+      Message: '아이디 또는 패스워드를 입력해주세요.',
+    }
     return;
   }
 
@@ -19,7 +21,7 @@ export const register = async (ctx) => {
     if (exists) {
       ctx.status = 409;
       ctx.body = {
-        Message: 'username is exist aleady',
+        Message: '이미 존재하는 계정입니다.',
       }
       return;
     }
@@ -55,7 +57,7 @@ export const login = async (ctx) => {
     if (!user) {
       ctx.status = 401;
       ctx.body = {
-        Message: 'incorrect username or password',
+        Message: '아이디 또는 패스워드가 틀렸습니다.',
       }
       return;
     }
@@ -63,7 +65,7 @@ export const login = async (ctx) => {
     if (!valid) {
       ctx.status = 401;
       ctx.body = {
-        Message: 'incorrect username or password',
+        Message: '아이디 또는 패스워드가 틀렸습니다.',
       }
       return;
     }
